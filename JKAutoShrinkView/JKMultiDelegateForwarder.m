@@ -8,6 +8,55 @@
 
 #import "JKMultiDelegateForwarder.h"
 
+
+@interface JKValue : NSValue
+
+@property (nonatomic, weak) id weakObjectValue;
+
+@end
+
+@implementation JKValue
+
+- (void) encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:self.weakObjectValue forKey:@"weak"];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if (self) {
+        [self setWeakObjectValue:[aDecoder decodeObjectForKey:@"weak"]];
+    }
+    return self;
+}
+
++ (NSValue *)valueWithNonretainedObject:(id)anObject
+{
+    JKValue *value = [[JKValue alloc] init];
+    [value setWeakObjectValue:anObject];
+    return value;
+}
+
+- (id) nonretainedObjectValue
+{
+    return [self weakObjectValue];
+}
+
+- (void *)pointerValue
+{
+    return nil;
+}
+
+- (BOOL)isEqualToValue:(NSValue *)value
+{
+    return [self.weakObjectValue isEqual:value];
+}
+
+@end
+
 @interface JKMultiDelegateForwarder ()
 @property (nonatomic, copy) NSArray *forwardingDelegates;
 @end
@@ -56,7 +105,10 @@
 - (NSArray *)forwardingDelegates{
     NSMutableArray *delegatesBuilder = [NSMutableArray arrayWithCapacity:[_forwardingDelegates count]];
     for (NSValue *delegateValue in _forwardingDelegates){
-        [delegatesBuilder addObject:[delegateValue nonretainedObjectValue]];
+        id value = [delegateValue nonretainedObjectValue];
+        if (value) {
+            [delegatesBuilder addObject:value];
+        }
     }
     return [delegatesBuilder copy];
 }
@@ -64,7 +116,7 @@
 - (void)setForwardingDelegates:(NSArray *)forwardingDelegates{
     NSMutableArray *delegatesUnretainedBuilder = [NSMutableArray array];
     for (id delegate in forwardingDelegates){
-        [delegatesUnretainedBuilder addObject:[NSValue valueWithNonretainedObject:delegate]];
+        [delegatesUnretainedBuilder addObject:[JKValue valueWithNonretainedObject:delegate]];
     }
     _forwardingDelegates = [delegatesUnretainedBuilder copy];
 }

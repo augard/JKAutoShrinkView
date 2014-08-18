@@ -124,7 +124,7 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
     CGFloat transformScaleRatio = percentComplete;
     
     {
-        self.internalTitleView.center = CGPointMake( self.internalTitleView.center.x , CGRectGetMinY(self.internalTitleView.frame) );
+        self.internalTitleView.center = CGPointMake( self.internalTitleView.center.x , CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) );
         self.internalTitleView.layer.anchorPoint = CGPointMake( 0.5f , 0.0f );
         self.internalTitleView.transform = CGAffineTransformMakeScale( transformScaleRatio, transformScaleRatio );
         self.internalTitleView.alpha = alphaRatio;
@@ -165,7 +165,7 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
     else {
         CGRect frame = [self frame];
         frame.origin.x = 10.0;
-        frame.origin.y = 0.0;
+        frame.origin.y = 20.0;
         frame.size.width = frame.size.width - 20.0;
         frame.size.height = 44.0;
         [self.internalTitleView setFrame:frame];
