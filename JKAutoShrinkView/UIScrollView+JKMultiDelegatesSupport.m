@@ -6,6 +6,7 @@
 //  Copyright (c) 2014年 Jackie. All rights reserved.
 //
 
+#import "NFDTableView.h"
 #import "UIScrollView+JKMultiDelegatesSupport.h"
 #import "JKMultiDelegateForwarder.h"
 #import <objc/runtime.h>
@@ -44,6 +45,11 @@ static NSString * JKMultiDelegatesSupportUIScrollViewDelegateProxy;
 }
 
 - (void)setDelegate_JKMultiDelegatesSupport:(id<UIScrollViewDelegate>)delegate{
+    if ([self class] == [NFDTableView class]) {
+        [self setDelegate_JKMultiDelegatesSupport:delegate];
+        return;
+    }
+    
     if(delegate){
         [self.multiDelegateProxy_JK removeForwardingDelegate:self.delegate];
         [self.multiDelegateProxy_JK addForwardingDelegate:delegate];

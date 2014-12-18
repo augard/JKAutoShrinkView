@@ -22,6 +22,9 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
 @property (nonatomic, readonly) UIView *backBarButtonView;
 
 @property (nonatomic, readonly) UIView *defaultTitleView;
+
+@property (nonatomic, assign) CGFloat statusHeight;
+
 @end
 
 @implementation JKAutoShrinkNavigationBar
@@ -122,9 +125,19 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
     
     CGFloat alphaRatio = (percentComplete < (1.0f - _JKAutoShrinkNavigationItemiewFadeAnimationDuration)) ? 0.0f : ((percentComplete - (1.0f - _JKAutoShrinkNavigationItemiewFadeAnimationDuration)) * (1.0f/_JKAutoShrinkNavigationItemiewFadeAnimationDuration) );
     CGFloat transformScaleRatio = percentComplete;
+    if (transformScaleRatio == 0) {
+        transformScaleRatio = 0.00001;
+    }
     
     {
-        self.internalTitleView.center = CGPointMake( self.internalTitleView.center.x , CGRectGetHeight([UIApplication sharedApplication].statusBarFrame) );
+        CGFloat statusHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+        if (statusHeight > 0.0) {
+            _statusHeight = statusHeight;
+        } else if (statusHeight == 0.0) {
+            statusHeight = _statusHeight;
+        }
+        
+        self.internalTitleView.center = CGPointMake( self.internalTitleView.center.x , statusHeight );
         self.internalTitleView.layer.anchorPoint = CGPointMake( 0.5f , 0.0f );
         self.internalTitleView.transform = CGAffineTransformMakeScale( transformScaleRatio, transformScaleRatio );
         self.internalTitleView.alpha = alphaRatio;
