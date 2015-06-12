@@ -45,11 +45,14 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
     [super setFrame:frame];
     
     if ([self.subviews count] > 0) {
+        CGFloat statusHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+        CGFloat top = [[NFDAppDelegate sharedAppDelegate].rootViewController topLayoutGuideLength];
+        
         UIView *view = [self subviews][0];
         CGRect viewFrame = [view frame];
-        if (viewFrame.size.height < frame.size.height + 20.0) {
-            viewFrame.origin.y = -20.0;
-            viewFrame.size.height = 20.0 + frame.size.height;
+        if (viewFrame.size.height < frame.size.height + top) {
+            viewFrame.origin.y = -top;
+            viewFrame.size.height = (statusHeight > 20.0 ? 0 : 20.0) + frame.size.height;
         }
         [view setFrame:viewFrame];
     }
@@ -61,6 +64,8 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
         center.y = 42;
     }
     [super setCenter:center];
+    
+    CGFloat top = [[NFDAppDelegate sharedAppDelegate].rootViewController topLayoutGuideLength];
     
     if ([self.subviews count] > 0) {
         UIView *view = [self subviews][0];
@@ -74,7 +79,7 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
             UIView *view = [self subviews][0];
             CGRect frame = [view frame];
             if (frame.size.height < 64.0) {
-                frame.origin.y = -20.0;
+                frame.origin.y = -top;
                 frame.size.height = 64.0;
             }
             [view setFrame:frame];
@@ -130,7 +135,7 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
     }
     
     {
-        CGFloat statusHeight = CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+        CGFloat statusHeight = [[NFDAppDelegate sharedAppDelegate].rootViewController topLayoutGuideLength];
         if (statusHeight > 0.0) {
             _statusHeight = statusHeight;
         } else if (statusHeight == 0.0) {
@@ -173,12 +178,14 @@ static CGFloat const _JKAutoShrinkNavigationItemiewFadeAnimationDuration = 0.3;
 }
 
 - (void)layoutSubviews{
-    if(!self.isShrinking)
+    if (!self.isShrinking) {
         [super layoutSubviews];
-    else {
+    } else {
+        CGFloat topGuide = [[NFDAppDelegate sharedAppDelegate].rootViewController topLayoutGuideLength];
+        
         CGRect frame = [self frame];
         frame.origin.x = 10.0;
-        frame.origin.y = 20.0;
+        frame.origin.y = topGuide > 20.0 ? 0.0 : topGuide;
         frame.size.width = frame.size.width - 20.0;
         frame.size.height = 44.0;
         [self.internalTitleView setFrame:frame];
